@@ -1,0 +1,4 @@
+feedparser==6.0.11
+openai==1.75.0
+gtts==2.5.4
+requests==2.32.3
