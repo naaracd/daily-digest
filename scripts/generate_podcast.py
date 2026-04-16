@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Daily Digest Podcast Generator — v3
-- Script written in Spanish (conversational, engaging)
-- Audio generated at 1.25x speed via ffmpeg atempo filter
-- Email digest stays in English (separate pipeline)
+Daily Digest Podcast Generator — v4
+- Playful, witty, energetic Spanish script
+- Sounds like a fun, sharp friend — not a news anchor
+- Audio at 1.25x speed via ffmpeg
 """
 
 import json
@@ -20,8 +20,8 @@ OUTPUT_DIR = os.environ.get("OUTPUT_DIR", "/tmp/digest_output")
 
 def build_spanish_script(digest):
     """
-    Use GPT to write a natural, conversational Spanish podcast script.
-    Style: like a smart Latin American friend catching you up on the news.
+    GPT writes a playful, punchy, energetic Spanish podcast script.
+    Tone: fun, sharp, a little cheeky — like a witty friend who actually reads the news.
     """
     date_str = digest.get("date", datetime.now().strftime("%A, %B %d, %Y"))
     stories  = digest.get("stories", [])
@@ -30,40 +30,42 @@ def build_spanish_script(digest):
     for s in stories:
         stories_text += (
             f"[{s.get('topic','World')}] {s.get('headline','')}\n"
-            f"{s.get('summary','')}\n"
-            f"Fuentes: {', '.join(s.get('sources',[]))}\n\n"
+            f"{s.get('summary','')}\n\n"
         )
 
-    prompt = f"""Eres el conductor de un podcast de noticias diarias llamado "El Digest del Día".
-Fecha: {date_str}
+    prompt = f"""Eres el conductor de "El Digest del Día" — un podcast de noticias diarias con mucha personalidad.
+Fecha de hoy: {date_str}
 
-Guía de estilo:
-- Habla como un amigo inteligente y bien informado que te pone al día — NO como un locutor rígido de televisión
-- Conversacional pero sustancioso. Frases cortas. Ritmo natural.
-- Usa transiciones ligeras como "Mientras tanto...", "En ese mismo contexto...", "Más cerca de casa...", "Y esto es interesante...", "Cambiando de tema..."
-- Varía tu energía — algunas noticias son urgentes, otras son para reflexionar, algunas tienen un toque irónico
-- NO digas "número uno", "historia uno", etc. Fluye naturalmente entre temas
-- Agrupa noticias relacionadas de forma natural (ej. todo Medio Oriente junto)
-- Duración total: unos 5–7 minutos al leerlo en voz alta (aproximadamente 800–1000 palabras)
-- Termina con un cierre breve y cálido
-- Escribe TODO en español latinoamericano natural
+TU ESTILO (muy importante):
+- Eres inteligente, rápido, con humor seco y un toque de ironía cuando la noticia lo merece
+- Hablas como un amigo brillante que leyó todo el periódico antes del desayuno y te lo cuenta en el camino al trabajo
+- Usas frases cortas y directas. Nada de relleno. Cada palabra cuenta.
+- Tienes energía — no eres monótono ni aburrido. Varía el ritmo: a veces urgente, a veces irónico, a veces con una pausa dramática
+- Puedes hacer comentarios ligeros o reacciones breves a las noticias (ej. "Sí, leyeron bien.", "No es broma.", "Spoiler: no terminó bien.", "Como si no tuviéramos suficiente con eso...")
+- Usas transiciones naturales y variadas — nunca "la siguiente noticia es..." — más bien: "Mientras tanto en...", "Hablando de cosas que no salen bien...", "Saltamos al otro lado del mundo...", "Y ahora algo que sí es buena noticia...", "Esto no te lo puedes perder..."
+- Agrupa noticias relacionadas de forma orgánica
+- NO menciones fuentes ni URLs en el audio
+- Duración: 4–5 minutos al leerlo (unas 650–800 palabras)
+- Abre con un gancho — algo que haga que la persona quiera seguir escuchando
+- Cierra con algo memorable: una reflexión rápida, un chiste sutil, o simplemente un "Eso es todo por hoy — cuídense mucho."
+- TODO en español latinoamericano natural y fluido
 
-Aquí están las noticias a cubrir (resúmenes en inglés — tradúcelos y adáptalos al español):
+NOTICIAS DE HOY (resúmenes en inglés — tradúcelos, adáptalos, dales vida):
 {stories_text}
 
-Escribe SOLO el guión hablado — sin indicaciones escénicas, sin encabezados, sin markdown. Solo las palabras que se van a decir."""
+IMPORTANTE: Escribe SOLO el guión hablado. Sin títulos, sin numeración, sin corchetes, sin markdown, sin indicaciones de escena. Solo las palabras exactas que se van a decir en voz alta."""
 
     try:
         response = client.chat.completions.create(
             model="gpt-4.1-mini",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=1600,
-            temperature=0.7,
+            max_tokens=1800,
+            temperature=0.82,  # Slightly higher for more personality
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
         print(f"  GPT script error: {e}", file=sys.stderr)
-        # Fallback: basic Spanish script
+        # Fallback: basic script
         lines = [f"Bienvenidos al Digest del Día. Hoy es {date_str}."]
         for s in stories:
             lines.append(f"{s.get('headline','')}. {s.get('summary','')}")
@@ -108,7 +110,7 @@ def text_to_speech_chunked(text, output_path, lang='es'):
     if not audio_files:
         return None
 
-    # Concatenate all chunks into raw file
+    # Concatenate all chunks
     if len(audio_files) == 1:
         import shutil
         shutil.copy(audio_files[0], raw_path)
@@ -122,13 +124,12 @@ def text_to_speech_chunked(text, output_path, lang='es'):
             import shutil
             shutil.copy(audio_files[0], raw_path)
 
-    # Apply 1.25x speed using ffmpeg atempo filter
+    # Apply 1.25x speed
     print(f"  Applying 1.25x speed...", file=sys.stderr)
     ret = os.system(
         f"ffmpeg -y -i '{raw_path}' -filter:a 'atempo=1.25' -vn '{output_path}' 2>/dev/null"
     )
     if ret != 0:
-        # Fallback: use raw without speed change
         import shutil
         shutil.copy(raw_path, output_path)
         print(f"  Speed filter failed, using original speed.", file=sys.stderr)
@@ -145,11 +146,14 @@ def text_to_speech_chunked(text, output_path, lang='es'):
 
 def generate_podcast(digest_path=None):
     if digest_path is None:
-        digests = sorted(
-            [f for f in os.listdir(OUTPUT_DIR)
-             if f.startswith("digest_") and f.endswith(".json")],
-            reverse=True
-        )
+        try:
+            digests = sorted(
+                [f for f in os.listdir(OUTPUT_DIR)
+                 if f.startswith("digest_") and f.endswith(".json")],
+                reverse=True
+            )
+        except Exception:
+            digests = []
         if not digests:
             print("No digest found.", file=sys.stderr)
             return None
@@ -158,7 +162,7 @@ def generate_podcast(digest_path=None):
     with open(digest_path, 'r', encoding='utf-8') as f:
         digest = json.load(f)
 
-    print("Writing conversational Spanish podcast script...", file=sys.stderr)
+    print("Writing playful Spanish podcast script...", file=sys.stderr)
     script = build_spanish_script(digest)
 
     script_path = digest_path.replace(".json", "_podcast_script.txt")
