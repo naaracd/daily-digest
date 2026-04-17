@@ -11,26 +11,45 @@ from datetime import datetime
 OUTPUT_DIR = os.environ.get("OUTPUT_DIR", "/tmp/digest_output")
 
 TOPIC_META = {
-    "Middle East":   {"color": "#e74c3c", "emoji": "🔥"},
-    "Palestine":     {"color": "#e74c3c", "emoji": "🕊️"},
-    "US Politics":   {"color": "#2c3e50", "emoji": "🇺🇸"},
-    "Economy":       {"color": "#2980b9", "emoji": "📈"},
-    "Trade":         {"color": "#2980b9", "emoji": "🤝"},
-    "Markets":       {"color": "#2980b9", "emoji": "💹"},
-    "China":         {"color": "#c0392b", "emoji": "🇨🇳"},
-    "Russia":        {"color": "#922b21", "emoji": "🇷🇺"},
-    "Climate":       {"color": "#27ae60", "emoji": "🌍"},
-    "Environment":   {"color": "#27ae60", "emoji": "🌿"},
-    "Peru":          {"color": "#e67e22", "emoji": "🇵🇪"},
-    "Latin America": {"color": "#e67e22", "emoji": "🌎"},
-    "Technology":    {"color": "#8e44ad", "emoji": "💻"},
-    "Science":       {"color": "#8e44ad", "emoji": "🔬"},
-    "Europe":        {"color": "#1f618d", "emoji": "🇪🇺"},
-    "Africa":        {"color": "#d4ac0d", "emoji": "🌍"},
-    "Asia":          {"color": "#d4ac0d", "emoji": "🌏"},
-    "Security":      {"color": "#7f8c8d", "emoji": "🛡️"},
-    "Health":        {"color": "#16a085", "emoji": "🏥"},
-    "default":       {"color": "#5d6d7e", "emoji": "📰"},
+    # Spanish keys (from GPT output)
+    "Medio Oriente":     {"color": "#e74c3c", "emoji": "🔥"},
+    "Palestina":         {"color": "#e74c3c", "emoji": "🕊️"},
+    "Política EE.UU.":   {"color": "#2c3e50", "emoji": "🇺🇸"},
+    "Política":          {"color": "#2c3e50", "emoji": "🏛️"},
+    "Economía":          {"color": "#2980b9", "emoji": "📈"},
+    "Comercio":          {"color": "#2980b9", "emoji": "🤝"},
+    "Mercados":          {"color": "#2980b9", "emoji": "💹"},
+    "China":             {"color": "#c0392b", "emoji": "🇨🇳"},
+    "Rusia":             {"color": "#922b21", "emoji": "🇷🇺"},
+    "Clima":             {"color": "#27ae60", "emoji": "🌍"},
+    "Medio Ambiente":    {"color": "#27ae60", "emoji": "🌿"},
+    "Perú":              {"color": "#e67e22", "emoji": "🇵🇪"},
+    "América Latina":    {"color": "#e67e22", "emoji": "🌎"},
+    "Tecnología":        {"color": "#8e44ad", "emoji": "💻"},
+    "Ciencia":           {"color": "#8e44ad", "emoji": "🔬"},
+    "Europa":            {"color": "#1f618d", "emoji": "🇪🇺"},
+    "África":            {"color": "#d4ac0d", "emoji": "🌍"},
+    "Asia":              {"color": "#d4ac0d", "emoji": "🌏"},
+    "Seguridad":         {"color": "#7f8c8d", "emoji": "🛡️"},
+    "Salud":             {"color": "#16a085", "emoji": "🏥"},
+    # English fallbacks (in case GPT outputs English)
+    "Middle East":       {"color": "#e74c3c", "emoji": "🔥"},
+    "Palestine":         {"color": "#e74c3c", "emoji": "🕊️"},
+    "US Politics":       {"color": "#2c3e50", "emoji": "🇺🇸"},
+    "Economy":           {"color": "#2980b9", "emoji": "📈"},
+    "Trade":             {"color": "#2980b9", "emoji": "🤝"},
+    "Markets":           {"color": "#2980b9", "emoji": "💹"},
+    "Climate":           {"color": "#27ae60", "emoji": "🌍"},
+    "Environment":       {"color": "#27ae60", "emoji": "🌿"},
+    "Peru":              {"color": "#e67e22", "emoji": "🇵🇪"},
+    "Latin America":     {"color": "#e67e22", "emoji": "🌎"},
+    "Technology":        {"color": "#8e44ad", "emoji": "💻"},
+    "Science":           {"color": "#8e44ad", "emoji": "🔬"},
+    "Europe":            {"color": "#1f618d", "emoji": "🇪🇺"},
+    "Africa":            {"color": "#d4ac0d", "emoji": "🌍"},
+    "Security":          {"color": "#7f8c8d", "emoji": "🛡️"},
+    "Health":            {"color": "#16a085", "emoji": "🏥"},
+    "default":           {"color": "#5d6d7e", "emoji": "📰"},
 }
 
 SOURCE_COLORS = {
@@ -104,7 +123,7 @@ def generate_html_email(digest_path):
         new_dev_badge = (
             f'<span style="background:#e74c3c;color:#fff;padding:1px 7px;'
             f'border-radius:3px;font-size:10px;font-weight:700;margin-left:6px;'
-            f'letter-spacing:0.5px;vertical-align:middle;">NEW DEV</span>'
+            f'letter-spacing:0.5px;vertical-align:middle;">NUEVO DESARROLLO</span>'
             if is_new else ""
         )
 
@@ -136,7 +155,7 @@ def generate_html_email(digest_path):
           <div style="display:flex;flex-wrap:wrap;align-items:center;">
             {badges_html}
             <a href="{url}" style="margin-left:auto;font-size:12px;color:{color};
-               font-weight:600;text-decoration:none;white-space:nowrap;">Read more →</a>
+               font-weight:600;text-decoration:none;white-space:nowrap;">Leer más →</a>
           </div>
 
         </div>
@@ -159,7 +178,7 @@ def generate_html_email(digest_path):
         audio_section = f"""
         <div style="padding:16px 22px;background:#f0f7ff;border-top:1px solid #dbeafe;">
           <p style="margin:0 0 10px 0;font-size:13px;font-weight:700;color:#1e40af;">
-            🎧 Original Audio Sources
+            🎧 Fuentes de Audio Originales
           </p>
           <div>{audio_links}</div>
         </div>"""
@@ -199,7 +218,7 @@ def generate_html_email(digest_path):
             <span style="font-size:20px;">✍️</span>
             <div>
               <p style="margin:0;font-size:10px;color:#b7791f;font-weight:700;
-                text-transform:uppercase;letter-spacing:1.5px;">Poem of the Day</p>
+                text-transform:uppercase;letter-spacing:1.5px;">Poema del Día</p>
               <h3 style="margin:2px 0 0 0;font-size:16px;font-weight:700;color:#744210;">
                 <a href="{poem_link}" style="color:#744210;text-decoration:none;">{poem_title}</a>
               </h3>
@@ -210,7 +229,7 @@ def generate_html_email(digest_path):
           {author_html}
           <p style="margin:12px 0 0 0;">
             <a href="{poem_link}" style="font-size:12px;color:#b7791f;font-weight:600;
-              text-decoration:none;">Read on Substack →</a>
+              text-decoration:none;">Leer en Substack →</a>
           </p>
         </div>"""
 
@@ -232,7 +251,7 @@ def generate_html_email(digest_path):
     <div style="background:linear-gradient(135deg,#1a2a4a 0%,#2d4a7a 100%);
       padding:32px 28px 26px;text-align:center;">
       <p style="margin:0 0 6px 0;font-size:11px;color:#93b4d8;
-        letter-spacing:2px;text-transform:uppercase;">Your Morning Briefing</p>
+        letter-spacing:2px;text-transform:uppercase;">Tu Resumen Matutino</p>
       <h1 style="margin:0 0 6px 0;font-size:26px;font-weight:800;color:#fff;
         letter-spacing:-0.5px;">☕ The Daily Digest</h1>
       <p style="margin:0;font-size:14px;color:#a8c4e0;">{date_str}</p>
@@ -241,8 +260,8 @@ def generate_html_email(digest_path):
     <!-- ── STATS BAR ── -->
     <div style="background:#1e3a5f;padding:10px 22px;text-align:center;
       font-size:12px;color:#7fb3d3;letter-spacing:0.3px;">
-      <strong style="color:#fff;">{len(stories)} stories</strong> &nbsp;·&nbsp;
-      fresh from the last 24 hours &nbsp;·&nbsp; no repeats
+      <strong style="color:#fff;">{len(stories)} noticias</strong> &nbsp;·&nbsp;
+      frescas de las últimas 24 horas &nbsp;·&nbsp; sin repeticiones
     </div>
 
     <!-- ── TODAY'S TOPICS ── -->
@@ -265,9 +284,9 @@ def generate_html_email(digest_path):
     <!-- ── FOOTER ── -->
     <div style="padding:18px 22px;text-align:center;font-size:11px;
       color:#a0aec0;background:#f8fafc;border-top:1px solid #edf2f7;">
-      Delivered every day at 7:30 AM ET &nbsp;·&nbsp;
-      Sources: WSJ · NYT · Al Jazeera · The Economist · RFI · Comité de Lectura<br>
-      <span style="color:#cbd5e0;">Your personal AI news assistant ✨</span>
+      Entregado cada día a las 7:30 AM ET &nbsp;·&nbsp;
+      Fuentes: WSJ · NYT · Al Jazeera · The Economist · RFI · Comité de Lectura<br>
+      <span style="color:#cbd5e0;">Tu asistente de noticias con IA ✨</span>
     </div>
 
   </div>
