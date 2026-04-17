@@ -30,18 +30,31 @@ def send_digest(html_path, podcast_path=None, digest_path=None):
     with open(html_path, 'r', encoding='utf-8') as f:
         html_content = f.read()
     
-    # Get date from digest JSON if available
+    # Get date and top headline from digest JSON if available
     date_str = datetime.now().strftime("%A, %B %d, %Y")
+    top_headline_teaser = ""
     if digest_path and os.path.exists(digest_path):
         with open(digest_path, 'r', encoding='utf-8') as f:
             digest = json.load(f)
         date_str = digest.get("date", date_str)
-    
+        stories = digest.get("stories", [])
+        if stories:
+            top_headline = stories[0].get("headline", "")
+            # Take first 3 meaningful words from the top headline
+            words = [w for w in top_headline.split() if len(w) > 1]
+            top_headline_teaser = " ".join(words[:3])
+
+    # Build subject line: "Daily News | Trump Congela Harvard" style
+    if top_headline_teaser:
+        subject = f"Daily News | {top_headline_teaser}"
+    else:
+        subject = f"Daily News | {date_str}"
+
     # Build email
     msg = MIMEMultipart('mixed')
     msg['From'] = GMAIL_USER
     msg['To'] = RECIPIENT
-    msg['Subject'] = f"Your Daily News Digest — {date_str}"
+    msg['Subject'] = subject
     
     # Attach HTML body
     msg_alt = MIMEMultipart('alternative')
