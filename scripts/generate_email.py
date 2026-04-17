@@ -84,6 +84,7 @@ def generate_html_email(digest_path):
     stories    = digest.get("stories", [])
     rfi_url    = digest.get("rfi_audio_url")
     comite_url = digest.get("comite_audio_url")
+    poem       = digest.get("poem")
 
     # ── Story cards ──────────────────────────────────────────────────────────
     story_cards = ""
@@ -175,6 +176,44 @@ def generate_html_email(digest_path):
         for t in topics_seen
     )
 
+    # ── Poem section ──────────────────────────────────────────────────────────
+    poem_section = ""
+    if poem and poem.get("text"):
+        poem_title   = poem.get("title", "Poem of the Day")
+        poem_text    = poem.get("text", "")
+        poem_author  = poem.get("author_note", "")
+        poem_link    = poem.get("link", "#")
+        # Format poem lines preserving line breaks
+        poem_lines = poem_text.strip().split("\n")
+        poem_html_lines = "<br>".join(
+            f'<span style="display:block;line-height:1.7;">{line if line.strip() else "&nbsp;"}</span>'
+            for line in poem_lines
+        )
+        author_html = ""
+        if poem_author:
+            author_html = f'<p style="margin:12px 0 0 0;font-size:12px;color:#718096;font-style:italic;">{poem_author}</p>'
+        poem_section = f"""
+        <div style="padding:24px 22px 20px;background:linear-gradient(135deg,#fdf6e3 0%,#fef9f0 100%);
+          border-top:2px solid #f6d860;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+            <span style="font-size:20px;">✍️</span>
+            <div>
+              <p style="margin:0;font-size:10px;color:#b7791f;font-weight:700;
+                text-transform:uppercase;letter-spacing:1.5px;">Poem of the Day</p>
+              <h3 style="margin:2px 0 0 0;font-size:16px;font-weight:700;color:#744210;">
+                <a href="{poem_link}" style="color:#744210;text-decoration:none;">{poem_title}</a>
+              </h3>
+            </div>
+          </div>
+          <div style="font-family:Georgia,'Times New Roman',serif;font-size:14px;
+            color:#4a3728;line-height:1.8;padding:0 4px;white-space:pre-wrap;">{poem_text.strip()}</div>
+          {author_html}
+          <p style="margin:12px 0 0 0;">
+            <a href="{poem_link}" style="font-size:12px;color:#b7791f;font-weight:600;
+              text-decoration:none;">Read on Substack →</a>
+          </p>
+        </div>"""
+
     # ── Full HTML ─────────────────────────────────────────────────────────────
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -216,6 +255,9 @@ def generate_html_email(digest_path):
     <div>
       {story_cards}
     </div>
+
+    <!-- ── POEM OF THE DAY ── -->
+    {poem_section}
 
     <!-- ── AUDIO SOURCES ── -->
     {audio_section}
