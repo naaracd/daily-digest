@@ -351,40 +351,41 @@ def build_unified_digest(all_raw_items, rfi_transcript=None, comite_episode=None
         prev_context = "\n\nSTORIES ALREADY SENT IN PREVIOUS DAYS (skip unless significant new development):\n"
         prev_context += "\n".join(f"- {h}" for h in sample)
 
-    prompt = f"""You are a world-class news editor creating a concise daily digest for a busy professional.
+    prompt = f"""Eres un editor de noticias de primer nivel creando un resumen diario conciso para un profesional ocupado.
 
-TODAY'S DATE: {now_et().strftime("%A, %B %d, %Y")}
+FECHA DE HOY: {now_et().strftime("%A, %d de %B de %Y")}
 
-STRICT RULES:
-1. FRESHNESS: Only include stories published within the last 24 hours. Discard anything older.
-2. NO REPEATS: Do NOT include stories that are the same as or very similar to the "already sent" list below, UNLESS there is a significant new development (e.g., a ceasefire broke down, a vote happened, a new leader was named). If you include an update to a previous story, mark is_new_development as true.
-3. DEDUPLICATION: If the same story appears in multiple sources, merge into ONE entry with the best details from each.
-4. RANKING: Order from most to least globally important.
-5. SUMMARIES: 2 sentences per story — punchy, clear, no fluff. Sentence 1 = what happened. Sentence 2 = why it matters or what's next.
-6. CATCHY HEADLINES: Every headline must be specific, punchy, and compelling — like a great newspaper front page. Use strong verbs. Be specific. Create intrigue. NO generic phrases like "tensions rise", "concerns grow", "situation escalates". GOOD examples: "Trump Freezes $2B in Harvard Funding Over DEI Demands", "Iran Agrees to Talks — But Only If Bombs Stay Off the Table", "Peru's Election: 35 Candidates, Zero Clear Frontrunner", "Gaza Ceasefire Collapses After Israel Resumes Strikes". BAD examples: "Middle East Situation Worsens", "Economic Uncertainty Continues".
-7. TOPIC TAG: Short label (e.g., "Middle East", "US Politics", "Economy", "Peru", "Climate").
-8. SPECIFICITY RULE: Every headline must tell the reader exactly what happened — who did what to whom. If you can't be specific, dig deeper into the summary to find the real news hook.
+REGLAS ESTRICTAS:
+1. FRESCURA: Solo incluye noticias publicadas en las últimas 24 horas. Descarta todo lo más antiguo.
+2. SIN REPETICIONES: NO incluyas noticias iguales o muy similares a la lista de "ya enviadas" abajo, A MENOS que haya un desarrollo significativo nuevo (ej. un cese al fuego colapsó, ocurrió una votación, se nombró un nuevo líder). Si incluyes una actualización de una noticia anterior, marca is_new_development como true.
+3. DEDUPLICACIÓN: Si la misma noticia aparece en múltiples fuentes, combínalas en UNA sola entrada con los mejores detalles de cada una.
+4. ORDEN: De más a menos importante globalmente.
+5. RESÚMENES: 2 oraciones por noticia — directas, claras, sin relleno. Oración 1 = qué pasó. Oración 2 = por qué importa o qué sigue.
+6. TITULARES LLAMATIVOS: Cada titular debe ser específico, contundente y atractivo — como la portada de un gran periódico. Usa verbos fuertes. Sé específico. Crea intriga. NADA de frases genéricas como "tensiones aumentan", "preocupaciones crecen", "situación se agrava". BUENOS ejemplos: "Trump Congela $2,000 Millones a Harvard por Exigencias sobre DEI", "Irán Acepta Negociar — Pero Solo si las Bombas Quedan Fuera de la Mesa", "Elecciones en Perú: 35 Candidatos, Ningún Favorito Claro", "El Alto el Fuego en Gaza Colapsa Horas Después de Ser Anunciado". MALOS ejemplos: "La Situación en Medio Oriente Empeora", "Continúa la Incertidumbre Económica".
+7. ETIQUETA DE TEMA: Etiqueta corta en español (ej. "Medio Oriente", "Política EE.UU.", "Economía", "Perú", "Clima", "América Latina").
+8. REGLA DE ESPECIFICIDAD: Cada titular debe decirle al lector exactamente qué pasó — quién hizo qué a quién. Si no puedes ser específico, busca más profundo en el resumen para encontrar el gancho real de la noticia.
+9. IDIOMA: Escribe TODOS los titulares, resúmenes, etiquetas de tema y la fecha en ESPAÑOL. Las fuentes (sources) pueden quedar en inglés.
 {prev_context}
 
-Return ONLY valid JSON in this exact format (no markdown, no extra text):
+Devuelve SOLO JSON válido en este formato exacto (sin markdown, sin texto extra):
 {{
   "date": "...",
   "stories": [
     {{
       "rank": 1,
-      "topic": "Middle East",
-      "headline": "Catchy specific headline (max 14 words)",
-      "summary": "First sentence what happened. Second sentence why it matters.",
+      "topic": "Medio Oriente",
+      "headline": "Titular llamativo y específico (máx 14 palabras)",
+      "summary": "Primera oración qué pasó. Segunda oración por qué importa.",
       "sources": ["Wall Street Journal", "Al Jazeera"],
-      "url": "https://best-link-for-more-info",
+      "url": "https://mejor-enlace-para-mas-info",
       "is_new_development": false
     }}
   ]
 }}
 
-Include 10-14 stories total. Prioritize global impact. Include at least 1-2 Peru/Latin America stories if available and fresh.
+Incluye 10-14 noticias en total. Prioriza impacto global. Incluye al menos 1-2 noticias de Perú/América Latina si están disponibles y son recientes.
 
-Raw input (all from last 24 hours):
+Entrada bruta (todo de las últimas 24 horas):
 {raw_text[:12000]}
 """
 

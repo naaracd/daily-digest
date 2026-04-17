@@ -50,7 +50,7 @@ TU ESTILO (muy importante):
 - Cierra con algo memorable: una reflexión rápida, un chiste sutil, o simplemente un "Eso es todo por hoy — cuídense mucho."
 - TODO en español latinoamericano natural y fluido
 
-NOTICIAS DE HOY (resúmenes en inglés — tradúcelos, adáptalos, dales vida):
+NOTICIAS DE HOY (ya en español — adáptalas, dales vida, hazlas sonar natural en voz alta):
 {stories_text}
 
 IMPORTANTE: Escribe SOLO el guión hablado. Sin títulos, sin numeración, sin corchetes, sin markdown, sin indicaciones de escena. Solo las palabras exactas que se van a decir en voz alta."""
