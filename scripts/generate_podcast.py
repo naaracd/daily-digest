@@ -64,7 +64,7 @@ IDIOMA: TODO EN ESPAÑOL LATINOAMERICANO. Si algún titular o resumen está en i
 NOTICIAS DE HOY:
 {stories_text}
 
-{f'''AL FINAL DEL PODCAST, lee este poema de forma natural y cálida, como si lo compartieras con un amigo. Preséntalo brevemente (ej. "Y para cerrar, un poema de Zaiden Werg que llegó hoy...") y luego léelo completo:
+{f'''AL FINAL DEL PODCAST, presenta este poema de forma natural y cálida, como si lo compartieras con un amigo. Preséntalo brevemente en español (ej. "Y para cerrar, un poema de Zaiden Werg que llegó hoy..."), pero luego léelo EXACTAMENTE como está escrito, en su idioma original, sin traducirlo ni modificarlo ni una sola palabra:
 {poem_block}''' if poem_block else ''}
 
 IMPORTANTE: Escribe SOLO el guión hablado. Sin títulos, sin numeración, sin corchetes, sin markdown, sin indicaciones de escena. Solo las palabras exactas que se van a decir en voz alta. TODO EN ESPAÑOL."""
