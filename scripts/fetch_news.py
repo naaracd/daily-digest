@@ -410,6 +410,68 @@ Noticias de entrada (últimas 24 horas):
         print(f"  GPT error: {e}", file=sys.stderr)
         return None
 
+# ─── Spanish Translation Post-Processor ─────────────────────────────────────
+
+def translate_digest_to_spanish(unified):
+    """
+    Mandatory post-processing step: translate ALL headlines, summaries, and topics
+    to Spanish using a dedicated translation call. This is bulletproof regardless
+    of what language the digest-building GPT returned.
+    """
+    stories = unified.get("stories", [])
+    if not stories:
+        return unified
+
+    # Build a flat list of all text fields to translate
+    items_to_translate = []
+    for s in stories:
+        items_to_translate.append({"type": "headline", "text": s.get("headline", "")})
+        items_to_translate.append({"type": "summary",  "text": s.get("summary", "")})
+        items_to_translate.append({"type": "topic",    "text": s.get("topic", "")})
+
+    texts = [item["text"] for item in items_to_translate]
+
+    prompt = (
+        "Translate each of the following news texts to natural, fluent Latin American Spanish. "
+        "Keep proper nouns, organization names, and URLs unchanged. "
+        "For topic labels, use short Spanish labels like: Medio Oriente, Política EE.UU., "
+        "Economía, Perú, América Latina, Europa, Asia, Seguridad, Tecnología, Clima, etc. "
+        "Return ONLY a JSON array of translated strings in the exact same order. No explanations.\n\n"
+        + json.dumps(texts, ensure_ascii=False)
+    )
+
+    try:
+        print("  Translating digest to Spanish...", file=sys.stderr)
+        response = client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=4000,
+            temperature=0.1,
+        )
+        content = response.choices[0].message.content.strip()
+        content = re.sub(r'^```(?:json)?\s*', '', content)
+        content = re.sub(r'\s*```$', '', content)
+        translated = json.loads(content)
+
+        if len(translated) != len(texts):
+            print(f"  Translation count mismatch ({len(translated)} vs {len(texts)}), skipping", file=sys.stderr)
+            return unified
+
+        # Apply translations back to stories
+        idx = 0
+        for s in stories:
+            s["headline"] = translated[idx];   idx += 1
+            s["summary"]  = translated[idx];   idx += 1
+            s["topic"]    = translated[idx];   idx += 1
+
+        print(f"  Translation complete — {len(stories)} stories now in Spanish", file=sys.stderr)
+        return unified
+
+    except Exception as e:
+        print(f"  Translation error (keeping original): {e}", file=sys.stderr)
+        return unified
+
+
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 def aggregate_news():
@@ -451,6 +513,10 @@ def aggregate_news():
 
     print("Building unified digest (Spanish, dedup, catchy headlines)...", file=sys.stderr)
     unified = build_unified_digest(all_items, rfi_transcript, comite_episode, previous_headlines)
+
+    # Mandatory translation step — ensures all content is in Spanish regardless of GPT output
+    if unified:
+        unified = translate_digest_to_spanish(unified)
 
     if not unified:
         fresh_items = [
